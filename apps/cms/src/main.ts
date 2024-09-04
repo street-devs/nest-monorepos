@@ -4,7 +4,11 @@ import {
   type NestFastifyApplication,
   FastifyAdapter,
 } from '@nestjs/platform-fastify'
-import { ApiRenderInterceptor, GlobalApplication, logException } from '@lib/nest-app'
+import {
+  ApiRenderInterceptor,
+  GlobalApplication,
+  logException,
+} from '@lib/nest-app'
 import {
   Logger,
   LoggerGlobalService,
@@ -54,42 +58,45 @@ GlobalApplication.bootstrap({
   onAfterStartedApp: async (application, appUri) => {
     // Sets up a global logger
     const globalLogger = application.get(LoggerGlobalService)
-    globalLogger.setContext('Mercury CMS MainApplication')
+    globalLogger.setContext(envRequired('APP_NAME'))
 
     // Log some information
-    globalLogger.info(`NODE_ENV ${process.env.NODE_ENV}`)
+    globalLogger.info(`NODE_ENV ${envRequired('NODE_ENV')}`)
     globalLogger.info(`Server started at ${appUri}`)
     globalLogger.info(`Swagger URL ${appUri + '/swagger'}`)
     globalLogger.info(`Download Swagger JSON ${appUri + '/swagger-json'}`)
   },
 }).catch((e) => {
-  logException(e, 'Mercury CMS MainApplication')
+  logException(e, envRequired('APP_NAME'))
 })
 
 /**
  * Register Swagger documentation for the application
  */
 function registerSwagger(application: INestApplication): void {
+  // Only enable Swagger in these environments
   const SWAGGER_ENVS: string[] = ['local', 'development']
 
-  if (SWAGGER_ENVS.includes(envOptional('', 'NODE_ENV'))) {
-    const config = new DocumentBuilder()
-      .setTitle(envRequired('APP_NAME'))
-      .setDescription('An application built on top of Mercury CMS')
-      .setContact(
-        'Justin Phan',
-        'https://github.com/duysolo',
-        'duypt.dev@gmail.com'
-      )
-      .setLicense('MIT', 'https://github.com/duysolo')
-      .setVersion(envOptional('1.0', 'APP_VERSION'))
-      .addBearerAuth()
-      .addBasicAuth()
-      .addCookieAuth('Authorization')
-      .build()
-
-    // Create and set up the Swagger UI
-    const document = SwaggerModule.createDocument(application, config)
-    SwaggerModule.setup('swagger', application, document)
+  if (!SWAGGER_ENVS.includes(envOptional('', 'NODE_ENV'))) {
+    return
   }
+
+  const config = new DocumentBuilder()
+    .setTitle(envRequired('APP_NAME'))
+    .setDescription('An application built on top of NestJS')
+    .setContact(
+      'Justin Phan',
+      'https://github.com/duysolo',
+      'duypt.dev@gmail.com'
+    )
+    .setLicense('MIT', 'https://github.com/duysolo')
+    .setVersion(envOptional('1.0', 'APP_VERSION'))
+    .addBearerAuth()
+    .addBasicAuth()
+    .addCookieAuth('Authorization')
+    .build()
+
+  // Create and set up the Swagger UI
+  const document = SwaggerModule.createDocument(application, config)
+  SwaggerModule.setup('swagger', application, document)
 }

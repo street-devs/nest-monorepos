@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/nest-monorepos/src",
+  "sourceRoot": "apps/cms/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/nest-monorepos/tsconfig.app.json"
+    "tsConfigPath": "apps/cms/tsconfig.app.json"
   },
   "monorepo": true,
   "defaultLibraryPrefix": "@lib",

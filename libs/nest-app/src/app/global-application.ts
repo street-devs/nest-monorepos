@@ -1,3 +1,4 @@
+import { envNumberOptional, envOptional } from '@lib/common'
 import { type INestApplication } from '@nestjs/common'
 import {
   type CorsOptions,
@@ -37,6 +38,10 @@ export class GlobalApplication {
       return
     }
 
+    console.log(`Boostrapping app in directory: ${appDirName}`)
+
+    GlobalApplication.setAppDir(appDirName)
+
     const application: T = await initApp()
 
     if (onBeforeStartApp) {
@@ -52,13 +57,12 @@ export class GlobalApplication {
     }
 
     await GlobalApplication.setApp(application).listen(
-      process.env.PORT || 3000,
-      process.env.SERVER__ADDRESS || '0.0.0.0',
+      envNumberOptional(3000, 'PORT'),
+      envOptional('0.0.0.0', 'SERVER__ADDRESS'),
       async () => {
         const address = await application.getUrl()
 
         GlobalApplication.setAppUrl(address)
-        GlobalApplication.setAppDir(appDirName)
 
         if (onAfterStartedApp) {
           await onAfterStartedApp(application, address)
@@ -81,21 +85,21 @@ export class GlobalApplication {
     return GlobalApplication._appUrl
   }
 
-  public static getAppUrl(): string {
-    return GlobalApplication._appUrl
-  }
-
   public static setAppDir(dir: string): string {
     GlobalApplication._appDir = dir
 
     return GlobalApplication._appDir
   }
 
-  public static getAppDir(): string {
+  public static app<T = INestApplication>(): T {
+    return GlobalApplication._application as unknown as T
+  }
+
+  public static get appUrl(): string {
     return GlobalApplication._appUrl
   }
 
-  public static app<T = INestApplication>(): T {
-    return GlobalApplication._application as unknown as T
+  public static get appDir(): string {
+    return GlobalApplication._appUrl
   }
 }
