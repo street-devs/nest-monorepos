@@ -6,8 +6,14 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "allowJs": false,
+    "target": "ESNext",
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -17,6 +23,7 @@
     "noUnusedLocals": true,
     "noFallthroughCasesInSwitch": false,
     "forceConsistentCasingInFileNames": false,
+    "resolveJsonModule": true,
     "paths": {
       "@lib/nest-app": [
         "libs/nest-app/src"
