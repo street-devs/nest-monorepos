@@ -5,7 +5,7 @@ import {
   NestModule,
 } from '@nestjs/common'
 import { GlobalExceptionFilter } from './global.exception-filter'
-import { GlobalApplication } from '../app'
+import { GlobalApplication } from '../app/global-application'
 
 export interface IExceptionCatchingCallbacks {
   beforeTransformException?: (req: any, exception: any) => Promise<any>

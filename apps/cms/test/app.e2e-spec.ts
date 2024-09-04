@@ -1,7 +1,7 @@
 import { type TestingModule, Test } from '@nestjs/testing'
 import { type INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
-import { CmsModule } from './../src/cms.module'
+import { CmsModule } from '../src/cms.module'
 
 describe('CmsController (e2e)', () => {
   let app: INestApplication

@@ -1,48 +1,33 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "strict": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowJs": false,
+    "esModuleInterop": true,
     "target": "ESNext",
-    "lib": [
-      "ESNext",
-      "dom"
-    ],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+    "strict": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "noImplicitAny": false,
     "noUnusedLocals": true,
+    "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
-    "forceConsistentCasingInFileNames": false,
     "resolveJsonModule": true,
+    "lib": ["ESNext", "dom"],
     "paths": {
-      "@lib/nest-app": [
-        "libs/nest-app/src"
-      ],
-      "@lib/nest-app/*": [
-        "libs/nest-app/src/*"
-      ],
-      "@lib/common": [
-        "libs/common/src"
-      ],
-      "@lib/common/*": [
-        "libs/common/src/*"
-      ],
-      "@lib/monitoring": [
-        "libs/monitoring/src"
-      ],
-      "@lib/monitoring/*": [
-        "libs/monitoring/src/*"
-      ]
+      "@lib/nest-app": ["libs/nest-app/src"],
+      "@lib/nest-app/*": ["libs/nest-app/src/*"],
+      "@lib/common": ["libs/common/src"],
+      "@lib/common/*": ["libs/common/src/*"],
+      "@lib/monitoring": ["libs/monitoring/src"],
+      "@lib/monitoring/*": ["libs/monitoring/src/*"]
     }
   }
 }

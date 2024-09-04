@@ -11,13 +11,13 @@ import {
   OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common'
+import { ModuleRef } from '@nestjs/core'
+import { BaseException } from '@lib/common'
 import {
   EXCEPTION_CATCHING_CALLBACKS,
   IExceptionCatchingCallbacks,
 } from './exceptions.module'
-import { ModuleRef } from '@nestjs/core'
 import { logException } from './log-exception'
-import { BaseException } from '@lib/common'
 
 export interface IGlobalExceptionFilterOptions {
   appType: 'http' | 'graphql'

@@ -1,5 +1,6 @@
 import { type AbstractHttpAdapter, NestFactory } from '@nestjs/core'
 import { type INestApplication, VersioningType } from '@nestjs/common'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import {
   type NestFastifyApplication,
   FastifyAdapter,
@@ -9,13 +10,12 @@ import {
   GlobalApplication,
   logException,
 } from '@lib/nest-app'
+import { envOptional, envRequired, loadEnv } from '@lib/common'
 import {
   Logger,
   LoggerGlobalService,
   loggerServiceToInjectNestApp,
-} from 'libs/monitoring/src'
-import { envOptional, envRequired, loadEnv } from '@lib/common'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+} from '@lib/monitoring'
 import FastifyCookie from '@fastify/cookie'
 import { CmsModule } from './cms.module'
 
