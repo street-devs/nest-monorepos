@@ -14,10 +14,16 @@ import {
   LoggerGlobalService,
   loggerServiceToInjectNestApp,
 } from 'libs/monitoring/src'
-import { envOptional, envRequired } from '@lib/common'
+import { envOptional, envRequired, loadEnv } from '@lib/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import FastifyCookie from '@fastify/cookie'
 import { CmsModule } from './cms.module'
+
+loadEnv(
+  ['.env.production', '.env.development', '.env'].map(
+    (file) => `${__dirname}/../../../apps/cms/${file}`
+  )
+)
 
 GlobalApplication.bootstrap({
   // Specifies the current directory name

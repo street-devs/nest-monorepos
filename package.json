@@ -29,6 +29,8 @@
     "@nestjs/event-emitter": "^2.0.4",
     "@nestjs/platform-fastify": "^10.4.1",
     "@nestjs/swagger": "^7.4.0",
+    "dotenv": "^16.4.5",
+    "dotenv-expand": "^11.0.6",
     "effect": "^3.7.0",
     "nestjs-pino": "^4.1.0",
     "pino": "^9.4.0",

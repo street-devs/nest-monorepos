@@ -1,3 +1,12 @@
+import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
+import { logger } from './logger'
+
+export function loadEnv(paths: string[]): void {
+  logger.info(`Loading environment variables from ${paths.join(', ')}`)
+  dotenvExpand.expand(dotenv.config({ path: paths }))
+}
+
 export function envRequired(name: string): string {
   const value = process.env[name]
   if (!value) {
