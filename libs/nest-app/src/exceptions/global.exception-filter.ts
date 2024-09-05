@@ -12,25 +12,21 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
-import { BaseException } from '@lib/common'
+import { BaseException, Nullable } from '@lib/common'
 import {
-  EXCEPTION_CATCHING_CALLBACKS,
-  IExceptionCatchingCallbacks,
+  EXCEPTION_CATCHING_OPTIONS,
+  IExceptionCatchingOptions,
 } from './exceptions.module'
 import { logException } from './log-exception'
 
-export interface IGlobalExceptionFilterOptions {
-  appType: 'http' | 'graphql'
-}
-
 export interface IExceptionResponse {
   status: string
-  statusCode: number
+  statusCode: HttpStatus
   timestamp: Date
-  path: string
-  help?: string
+  path?: Nullable<string>
+  help?: Nullable<string>
   message: string
-  data?: any
+  data?: Nullable<unknown>
   shouldShowSuccessStatusCode: boolean
 }
 
@@ -42,12 +38,12 @@ export interface IUnwantedError extends Error {
 @Catch()
 @Injectable()
 export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
-  private _callbacks: IExceptionCatchingCallbacks = {}
+  private _options: IExceptionCatchingOptions = {}
 
   public constructor(private readonly _moduleRef: ModuleRef) {}
 
   public onModuleInit(): void {
-    this._callbacks = this._moduleRef.get(EXCEPTION_CATCHING_CALLBACKS, {
+    this._options = this._moduleRef.get(EXCEPTION_CATCHING_OPTIONS, {
       strict: false,
     })
   }
@@ -60,8 +56,8 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
 
     const request = context.getRequest()
 
-    if (this._callbacks.beforeTransformException) {
-      void this._callbacks
+    if (this._options.beforeTransformException) {
+      void this._options
         .beforeTransformException(request, exception)
         .catch((e) => {
           logException(e, 'GlobalExceptionFilter.beforeTransformException')
@@ -71,8 +67,8 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
     const { shouldShowSuccessStatusCode, ...exceptionResponse } =
       await this.transformException(request, exception)
 
-    if (this._callbacks.afterTransformException) {
-      void this._callbacks
+    if (this._options.afterTransformException) {
+      void this._options
         .afterTransformException(request, exceptionResponse, exception)
         .catch((e) => {
           logException(e, 'GlobalExceptionFilter.afterTransformException')
@@ -108,7 +104,7 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
 
     const exceptionResponse: IExceptionResponse = {
       timestamp: new Date(),
-      path: request?.url || undefined,
+      path: request?.url,
       help: undefined,
       message: exceptionMessage,
       data: undefined,
@@ -175,7 +171,7 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
       exceptionResponse.statusCode === HttpStatus.NOT_FOUND ||
       exception instanceof NotFoundException
     ) {
-      exceptionResponse.message = exception.message || 'NOT_FOUND_EXCEPTION'
+      exceptionResponse.message = exception.message || 'NOT_FOUND'
 
       exceptionResponse.shouldShowSuccessStatusCode = true
 
@@ -192,6 +188,8 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
         catchSpecialException(exception) || exceptionResponse.message
 
       exceptionResponse.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+
+      exceptionResponse.shouldShowSuccessStatusCode = false
     }
 
     logException(exception, 'GlobalExceptionFilter.transformException')

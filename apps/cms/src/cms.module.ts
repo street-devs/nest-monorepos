@@ -11,7 +11,7 @@ import { CmsService } from './cms.service'
       requestTracing: true,
       autoLoggingRequestResult: false,
     }),
-    ExceptionsModule,
+    ExceptionsModule.forRootAsync({}),
   ],
   controllers: [CmsController],
   providers: [CmsService],

@@ -1,44 +1,36 @@
 import { DynamicModule, Module, ModuleMetadata, Scope } from '@nestjs/common'
 import { GlobalExceptionFilter } from './global.exception-filter'
 import { APP_FILTER } from '@nestjs/core'
+import { Nullable } from '@lib/common'
 
-export interface IExceptionCatchingCallbacks {
+export interface IExceptionCatchingOptions {
+  // Use this option to handle some events before the exception is transformed
   beforeTransformException?: (req: any, exception: any) => Promise<any>
+  // Use this option to handle some events after the exception is transformed
   afterTransformException?: (
     req: any,
     transformedException: any,
     exception: any
   ) => Promise<any>
+  shouldShowSuccessStatusCode?: boolean
 }
 
 export interface IExceptionsModuleOptions
   extends Pick<ModuleMetadata, 'imports'> {
-  callback: IExceptionCatchingCallbacks
+  options?: Nullable<IExceptionCatchingOptions>
 }
 
-export const EXCEPTION_CATCHING_CALLBACKS = Symbol(
-  'EXCEPTION_CATCHING_CALLBACKS'
-)
+export const EXCEPTION_CATCHING_OPTIONS = Symbol('EXCEPTION_CATCHING_OPTIONS')
 
-@Module({
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
-      scope: Scope.REQUEST,
-    },
-    {
-      provide: EXCEPTION_CATCHING_CALLBACKS,
-      useValue: {},
-    },
-  ],
-  exports: [EXCEPTION_CATCHING_CALLBACKS],
-})
+@Module({})
 export class ExceptionsModule {
-  public static forRootAsync(options: IExceptionsModuleOptions): DynamicModule {
+  public static forRootAsync({
+    imports,
+    options,
+  }: IExceptionsModuleOptions): DynamicModule {
     return {
       module: ExceptionsModule,
-      imports: options.imports || [],
+      imports: imports || [],
       providers: [
         {
           provide: APP_FILTER,
@@ -46,11 +38,13 @@ export class ExceptionsModule {
           scope: Scope.REQUEST,
         },
         {
-          provide: EXCEPTION_CATCHING_CALLBACKS,
-          useValue: options.callback,
+          provide: EXCEPTION_CATCHING_OPTIONS,
+          useValue: options ?? {
+            shouldShowSuccessStatusCode: false,
+          },
         },
       ],
-      exports: [EXCEPTION_CATCHING_CALLBACKS],
+      exports: [EXCEPTION_CATCHING_OPTIONS],
     }
   }
 }
