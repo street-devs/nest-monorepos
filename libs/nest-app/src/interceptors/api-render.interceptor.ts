@@ -1,31 +1,52 @@
 import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
+  type CallHandler,
+  type ExecutionContext,
+  type NestInterceptor,
 } from '@nestjs/common'
-import { Effect } from 'effect'
-import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { map, type Observable } from 'rxjs'
 
-@Injectable()
+export interface IApiRenderInterceptorOptions {
+  showResponseStatus: boolean
+}
+
 export class ApiRenderInterceptor implements NestInterceptor {
+  public constructor(private readonly _options: IApiRenderInterceptorOptions) {}
+
   public intercept(
     context: ExecutionContext,
     next: CallHandler
-  ): Observable<unknown> {
+  ): Observable<Record<string, unknown>> {
     return next.handle().pipe(
-      map((a) => {
-        if (a?._tag) {
-          return handleEffectTS(a)
+      map((response) => {
+        if (context.getType() !== 'http') {
+          return response
         }
 
-        return a
+        if (response === undefined || !response) {
+          return {}
+        }
+
+        if (isNotObjectResponse(response)) {
+          return response
+        }
+      }),
+      map((response) => {
+        if (
+          isNotObjectResponse(response) ||
+          !this._options.showResponseStatus
+        ) {
+          return response
+        }
+
+        return {
+          ...response,
+          status: 'OK',
+        }
       })
     )
   }
 }
 
-async function handleEffectTS(a: Effect.Effect<unknown>) {
-  return Effect.runPromise(a)
+function isNotObjectResponse(response: unknown) {
+  return !(response instanceof Object) || Array.isArray(response)
 }

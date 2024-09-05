@@ -1,11 +1,6 @@
-import {
-  DynamicModule,
-  Module,
-  ModuleMetadata,
-  NestModule,
-} from '@nestjs/common'
+import { DynamicModule, Module, ModuleMetadata, Scope } from '@nestjs/common'
 import { GlobalExceptionFilter } from './global.exception-filter'
-import { GlobalApplication } from '../app/global-application'
+import { APP_FILTER } from '@nestjs/core'
 
 export interface IExceptionCatchingCallbacks {
   beforeTransformException?: (req: any, exception: any) => Promise<any>
@@ -27,33 +22,35 @@ export const EXCEPTION_CATCHING_CALLBACKS = Symbol(
 
 @Module({
   providers: [
-    GlobalExceptionFilter,
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+      scope: Scope.REQUEST,
+    },
     {
       provide: EXCEPTION_CATCHING_CALLBACKS,
       useValue: {},
     },
   ],
-  exports: [GlobalExceptionFilter, EXCEPTION_CATCHING_CALLBACKS],
+  exports: [EXCEPTION_CATCHING_CALLBACKS],
 })
-export class ExceptionsModule implements NestModule {
-  public constructor(private readonly _filter: GlobalExceptionFilter) {}
-
-  public configure(): void {
-    GlobalApplication.app().useGlobalFilters(this._filter)
-  }
-
+export class ExceptionsModule {
   public static forRootAsync(options: IExceptionsModuleOptions): DynamicModule {
     return {
       module: ExceptionsModule,
       imports: options.imports || [],
       providers: [
-        GlobalExceptionFilter,
+        {
+          provide: APP_FILTER,
+          useClass: GlobalExceptionFilter,
+          scope: Scope.REQUEST,
+        },
         {
           provide: EXCEPTION_CATCHING_CALLBACKS,
           useValue: options.callback,
         },
       ],
-      exports: [GlobalExceptionFilter, EXCEPTION_CATCHING_CALLBACKS],
+      exports: [EXCEPTION_CATCHING_CALLBACKS],
     }
   }
 }

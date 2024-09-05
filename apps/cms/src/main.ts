@@ -5,11 +5,7 @@ import {
   type NestFastifyApplication,
   FastifyAdapter,
 } from '@nestjs/platform-fastify'
-import {
-  ApiRenderInterceptor,
-  GlobalApplication,
-  logException,
-} from '@lib/nest-app'
+import { GlobalApplication, logException } from '@lib/nest-app'
 import { envOptional, envRequired, loadEnv } from '@lib/common'
 import {
   Logger,
@@ -54,8 +50,6 @@ GlobalApplication.bootstrap({
     application.enableVersioning({
       type: VersioningType.URI,
     })
-
-    application.useGlobalInterceptors(new ApiRenderInterceptor())
 
     // Register swagger
     registerSwagger(application)

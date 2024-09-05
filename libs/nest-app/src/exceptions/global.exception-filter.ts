@@ -63,7 +63,9 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
     if (this._callbacks.beforeTransformException) {
       void this._callbacks
         .beforeTransformException(request, exception)
-        .catch(console.error)
+        .catch((e) => {
+          logException(e, 'GlobalExceptionFilter.beforeTransformException')
+        })
     }
 
     const { shouldShowSuccessStatusCode, ...exceptionResponse } =
@@ -72,7 +74,9 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
     if (this._callbacks.afterTransformException) {
       void this._callbacks
         .afterTransformException(request, exceptionResponse, exception)
-        .catch(console.error)
+        .catch((e) => {
+          logException(e, 'GlobalExceptionFilter.afterTransformException')
+        })
     }
 
     const response = context.getResponse()
@@ -144,6 +148,8 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
 
     if (
       exceptionResponse.statusCode === HttpStatus.UNAUTHORIZED ||
+      exceptionResponse.statusCode === HttpStatus.FORBIDDEN ||
+      exception instanceof ForbiddenException ||
       exception instanceof UnauthorizedException ||
       exception instanceof BadRequestException
     ) {
@@ -153,6 +159,7 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
           break
         case HttpStatus.FORBIDDEN:
           exceptionResponse.message = 'FORBIDDEN'
+          exceptionResponse.help = exception.message
           break
         default:
           exceptionResponse.message = exceptionMessage
@@ -171,17 +178,6 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
       exceptionResponse.message = exception.message || 'NOT_FOUND_EXCEPTION'
 
       exceptionResponse.shouldShowSuccessStatusCode = true
-
-      return exceptionResponse
-    }
-
-    if (
-      exceptionResponse.statusCode === HttpStatus.FORBIDDEN ||
-      exception instanceof ForbiddenException
-    ) {
-      exceptionResponse.message = exception.message || 'FORBIDDEN_EXCEPTION'
-
-      exceptionResponse.shouldShowSuccessStatusCode = false
 
       return exceptionResponse
     }

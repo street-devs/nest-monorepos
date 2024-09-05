@@ -1,6 +1,6 @@
 import { type TestingModule, Test } from '@nestjs/testing'
-import { CmsController } from './cms.controller'
-import { CmsService } from './cms.service'
+import { CmsController } from '../cms.controller'
+import { CmsService } from '../cms.service'
 
 describe('CmsController', () => {
   let cmsController: CmsController
@@ -11,12 +11,18 @@ describe('CmsController', () => {
       providers: [CmsService],
     }).compile()
 
-    cmsController = app.get<CmsController>(CmsController)
+    cmsController = app.get(CmsController)
   })
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
       expect(cmsController.getHello()).toBe('Hello World!')
+    })
+  })
+
+  describe('root', () => {
+    it('should return empty reponse', () => {
+      expect(cmsController.health()).toBeUndefined()
     })
   })
 })

@@ -38,8 +38,6 @@ export class GlobalApplication {
       return
     }
 
-    console.log(`Boostrapping app in directory: ${appDirName}`)
-
     GlobalApplication.setAppDir(appDirName)
 
     const application: T = await initApp()
