@@ -20,7 +20,7 @@ describe('CmsController', () => {
     })
   })
 
-  describe('root', () => {
+  describe('health', () => {
     it('should return empty reponse', () => {
       expect(cmsController.health()).toBeUndefined()
     })
