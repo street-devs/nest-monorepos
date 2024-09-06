@@ -1,8 +1,9 @@
-import { type UnknownRecord, logger } from '@lib/common'
+import { type UnknownRecord } from '@lib/common'
+import { printLogError } from '../helpers'
 
 export interface ILogExceptionResponse {
   exceptionName: string
-  message: string
+  msg: string
   data: UnknownRecord
 }
 
@@ -20,11 +21,11 @@ export function logException(
     err: { ...exception, stack },
   }
 
-  logger.error({ args, msg: exception.message }, context)
+  printLogError(context, exception, { args, msg: exception.message })
 
   return {
     exceptionName: context,
-    message: exception.message,
+    msg: exception.message,
     data: args,
   }
 }

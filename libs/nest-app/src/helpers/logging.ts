@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common'
-import { type LoggerGlobalService } from '../services'
+import { type LoggerGlobalService } from '../services/logger.service'
 
 let globalLogger: LoggerGlobalService = console as any
 
@@ -45,7 +45,7 @@ function printLog(
 function parseExceptionDataFromError(err: Error & { code?: HttpStatus }): {
   msg: string
   stackTrace?: string[] | undefined
-  code: HttpStatus
+  code?: HttpStatus
 } {
   return {
     msg: err.message,

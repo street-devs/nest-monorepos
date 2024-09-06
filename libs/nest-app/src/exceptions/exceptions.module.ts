@@ -1,7 +1,7 @@
-import { DynamicModule, Module, ModuleMetadata, Scope } from '@nestjs/common'
+import { type DynamicModule, type ModuleMetadata, Scope } from '@nestjs/common'
 import { GlobalExceptionFilter } from './global.exception-filter'
 import { APP_FILTER } from '@nestjs/core'
-import { Nullable } from '@lib/common'
+import { type Nullable } from '@lib/common'
 
 export interface IExceptionCatchingOptions {
   // Use this option to handle some events before the exception is transformed
@@ -22,7 +22,6 @@ export interface IExceptionsModuleOptions
 
 export const EXCEPTION_CATCHING_OPTIONS = Symbol('EXCEPTION_CATCHING_OPTIONS')
 
-@Module({})
 export class ExceptionsModule {
   public static forRootAsync({
     imports,

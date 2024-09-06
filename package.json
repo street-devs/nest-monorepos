@@ -9,15 +9,15 @@
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:dev": "USE_PRETTY_LOG=true nest start --watch",
+    "start:debug": "USE_PRETTY_LOG=true nest start --debug --watch",
     "start:prod": "node dist/apps/cms/main",
     "lint": "eslint \"{apps,libs}/**/*.ts\"",
     "lint:fix": "eslint \"{apps,libs}/**/*.ts\" --fix",
     "test": "jest --no-watchman",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage --no-watchman",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:debug": "USE_PRETTY_LOG=true node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config jest-e2e.config.ts --forceExit --no-watchman"
   },
   "dependencies": {
@@ -35,6 +35,7 @@
     "effect": "^3.7.2",
     "nestjs-pino": "^4.1.0",
     "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
@@ -87,8 +88,7 @@
     ],
     "moduleNameMapper": {
       "^@lib/nest-app(|/.*)$": "<rootDir>/libs/nest-app/src/$1",
-      "^@lib/common(|/.*)$": "<rootDir>/libs/common/src/$1",
-      "^@lib/monitoring(|/.*)$": "<rootDir>/libs/monitoring/src/$1"
+      "^@lib/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     }
   }
 }

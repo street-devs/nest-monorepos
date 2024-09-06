@@ -25,9 +25,7 @@
       "@lib/nest-app": ["libs/nest-app/src"],
       "@lib/nest-app/*": ["libs/nest-app/src/*"],
       "@lib/common": ["libs/common/src"],
-      "@lib/common/*": ["libs/common/src/*"],
-      "@lib/monitoring": ["libs/monitoring/src"],
-      "@lib/monitoring/*": ["libs/monitoring/src/*"]
+      "@lib/common/*": ["libs/common/src/*"]
     }
   }
 }

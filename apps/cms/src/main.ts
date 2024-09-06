@@ -5,15 +5,15 @@ import {
   type NestFastifyApplication,
   FastifyAdapter,
 } from '@nestjs/platform-fastify'
-import { GlobalApplication, logException } from '@lib/nest-app'
-import { envOptional, envRequired, loadEnv } from '@lib/common'
 import {
-  Logger,
+  GlobalApplication,
+  logException,
   LoggerGlobalService,
-  loggerServiceToInjectNestApp,
-} from '@lib/monitoring'
+} from '@lib/nest-app'
+import { envOptional, envRequired, loadEnv } from '@lib/common'
 import FastifyCookie from '@fastify/cookie'
 import { CmsModule } from './cms.module'
+import { Logger } from 'nestjs-pino'
 
 loadEnv(
   ['.env.production', '.env.development', '.env'].map(
@@ -33,7 +33,6 @@ GlobalApplication.bootstrap({
       {
         bufferLogs: true,
         abortOnError: false,
-        logger: loggerServiceToInjectNestApp,
       }
     )
   },

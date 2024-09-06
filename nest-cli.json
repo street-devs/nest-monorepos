@@ -37,15 +37,6 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
-    },
-    "monitoring": {
-      "type": "library",
-      "root": "libs/monitoring",
-      "entryFile": "index",
-      "sourceRoot": "libs/monitoring/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/monitoring/tsconfig.lib.json"
-      }
     }
   }
 }
