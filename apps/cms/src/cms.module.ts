@@ -6,8 +6,9 @@ import { CmsService } from './cms.service'
 @Module({
   imports: [
     BaseNestAppModule.forRoot({
-      requestTracing: true,
       autoLoggingRequestResult: false,
+      requestTracing: true,
+      transformReponse: true,
     }),
     ExceptionsModule.forRootAsync({}),
   ],
