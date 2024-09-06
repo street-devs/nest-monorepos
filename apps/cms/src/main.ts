@@ -33,7 +33,7 @@ GlobalApplication.bootstrap({
       {
         bufferLogs: true,
         abortOnError: false,
-        logger: loggerServiceToInjectNestApp,
+        logger: loggerServiceToInjectNestApp(),
       }
     )
   },

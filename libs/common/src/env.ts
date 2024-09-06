@@ -1,9 +1,8 @@
 import * as dotenv from 'dotenv'
-import * as dotenvExpand from 'dotenv-expand'
-import { logger } from './logger'
+import dotenvExpand from 'dotenv-expand'
 
 export function loadEnv(paths: string[]): void {
-  logger.info(`Loading environment variables from ${paths.join(', ')}`)
+  console.info(`Loading environment variables from ${paths.join(', ')}`)
   dotenvExpand.expand(dotenv.config({ path: paths }))
 }
 

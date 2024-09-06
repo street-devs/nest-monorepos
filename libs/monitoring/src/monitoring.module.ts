@@ -10,7 +10,7 @@ import { setGlobalLogger } from './helpers'
 import { RequestTracingInterceptor } from './interceptors'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { LogLevelEnum } from './enums'
-import { logger } from '@lib/common'
+import { getLogger } from '@lib/common'
 
 export interface IMonitoringModuleDefinitions {
   excludedRoutes?: RouteInfo[]
@@ -24,18 +24,15 @@ const defaultExcludedRoutes = [
     method: RequestMethod.ALL,
     path: '/health',
   },
-  {
-    method: RequestMethod.ALL,
-    path: '/healthz',
-  },
 ]
 
-export const loggerServiceToInjectNestApp = new NestPinoLogger(
-  new PinoLogger({
-    pinoHttp: logger,
-  }),
-  {}
-)
+export const loggerServiceToInjectNestApp = () =>
+  new NestPinoLogger(
+    new PinoLogger({
+      pinoHttp: getLogger(),
+    }),
+    {}
+  )
 
 @Module({})
 export class MonitoringModule {
@@ -53,7 +50,7 @@ export class MonitoringModule {
       imports: [
         LoggerModule.forRoot({
           pinoHttp: {
-            logger: logger,
+            logger: getLogger(),
             customAttributeKeys: { responseTime: 'tookMs' },
             autoLogging: autoLoggingRequestResult || false,
           },
