@@ -102,6 +102,9 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
   ): Promise<IExceptionResponse> {
     let exceptionMessage = 'DEFAULT_EXCEPTION_MESSAGE'
 
+    const defaultShouldShowSuccessStatusCode =
+      this._options.shouldShowSuccessStatusCode ?? false
+
     const exceptionResponse: IExceptionResponse = {
       timestamp: new Date(),
       path: request?.url,
@@ -110,7 +113,7 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
       data: undefined,
       statusCode: HttpStatus.BAD_REQUEST,
       status: 'FAIL',
-      shouldShowSuccessStatusCode: false,
+      shouldShowSuccessStatusCode: defaultShouldShowSuccessStatusCode,
     }
 
     if (exception instanceof BaseException) {
@@ -122,7 +125,8 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
         exception.code || exceptionResponse.statusCode
 
       exceptionResponse.shouldShowSuccessStatusCode =
-        exception.shouldShowSuccessStatusCode!
+        exception.shouldShowSuccessStatusCode ??
+        defaultShouldShowSuccessStatusCode
 
       return exceptionResponse
     }
@@ -162,8 +166,6 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
           break
       }
 
-      exceptionResponse.shouldShowSuccessStatusCode = true
-
       return exceptionResponse
     }
 
@@ -172,8 +174,6 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
       exception instanceof NotFoundException
     ) {
       exceptionResponse.message = exception.message || 'NOT_FOUND'
-
-      exceptionResponse.shouldShowSuccessStatusCode = true
 
       return exceptionResponse
     }

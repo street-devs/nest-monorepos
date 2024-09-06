@@ -1,5 +1,4 @@
 export class BaseException<DataType = any> extends Error {
-  public msg?: string
   public data?: DataType
   public help?: string | string[] | any
   public code?: number
@@ -7,13 +6,13 @@ export class BaseException<DataType = any> extends Error {
   public shouldShowSuccessStatusCode?: boolean
 
   public constructor(partial?: Partial<BaseException<DataType>>) {
-    const msg = partial?.message || partial?.msg || 'BaseException'
+    const message = partial?.message || 'BaseException'
 
-    super(msg)
+    super(message)
 
     Object.assign(this, {
       code: 400,
-      msg,
+      message,
       shouldShowSuccessStatusCode: false,
       ...(partial || {}),
     })
@@ -25,7 +24,7 @@ export class BaseException<DataType = any> extends Error {
 
   public toString(): string {
     return JSON.stringify({
-      msg: this.msg,
+      message: this.message,
       data: this.data,
       help: this.help,
       code: this.code,
