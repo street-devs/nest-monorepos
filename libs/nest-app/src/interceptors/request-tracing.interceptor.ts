@@ -7,12 +7,21 @@ import {
 import { IncomingMessage } from 'http'
 import { finalize, Observable } from 'rxjs'
 import { LoggerService } from '../services'
+import { nowInS } from '@lib/common'
+import { type GqlContextType, GqlExecutionContext } from '@nestjs/graphql'
 
 declare module 'http' {
   interface IncomingMessage {
     body: unknown
     params: Record<string, unknown>
   }
+}
+
+interface RequestTracingData {
+  method?: string
+  url?: string
+  requestBody?: unknown
+  requestParams?: unknown
 }
 
 @Injectable()
@@ -25,29 +34,60 @@ export class RequestTracingInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler
   ): Observable<unknown> {
-    const req: IncomingMessage = context.switchToHttp().getRequest()
+    const requestType = context.getType<GqlContextType>()
 
-    const s1 = new Date().getTime()
+    const { method, url, requestBody, requestParams, ...rest } =
+      requestType === 'graphql'
+        ? handleGraphqlRequestTracing(context)
+        : handleHttpRequestTracing(context)
 
-    this._logger.info(`[START] ${req?.method} - ${req?.url}`)
+    const s1 = nowInS()
 
-    const body = req.body
-    const params = req.params
-
-    const contentType = req.headers['content-type']
-    const isMultipart = contentType?.includes('multipart')
+    this._logger.info(`[START] ${method} - ${url}`)
 
     return next.handle().pipe(
       finalize(() => {
         this._logger.info(
           {
-            tookMs: new Date().getTime() - s1,
-            requestParams: params,
-            requestBody: isMultipart ? 'multipart' : body,
+            tookMs: nowInS() - s1,
+            requestParams,
+            requestBody,
+            ...rest,
           },
-          `[FINISH] ${req?.method} - ${req?.url}`
+          `[FINISH] ${method} - ${url}`
         )
       })
     )
+  }
+}
+
+function handleHttpRequestTracing(
+  context: ExecutionContext
+): RequestTracingData {
+  const req: IncomingMessage = context.switchToHttp().getRequest()
+
+  const body = req.body
+
+  const contentType = req.headers['content-type']
+  const isMultipart = contentType?.includes('multipart')
+
+  return {
+    method: req.method,
+    url: req.url,
+    requestBody: isMultipart ? 'multipart' : body,
+    requestParams: req.params,
+  }
+}
+
+function handleGraphqlRequestTracing(
+  context: ExecutionContext
+): RequestTracingData {
+  const ctx = GqlExecutionContext.create(context)
+
+  return {
+    method: 'POST',
+    url: 'graphql',
+    requestBody: ctx.getArgByIndex(2)?.body,
+    requestParams: null,
   }
 }
