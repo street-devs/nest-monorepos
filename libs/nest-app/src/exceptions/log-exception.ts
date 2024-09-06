@@ -3,7 +3,7 @@ import { printLogError } from '../helpers'
 
 export interface ILogExceptionResponse {
   exceptionName: string
-  msg: string
+  message: string
   data: UnknownRecord
 }
 
@@ -12,20 +12,22 @@ export function logException(
   context: string,
   extras?: UnknownRecord
 ): ILogExceptionResponse {
-  const stack: string[] = (
+  const stackTrace: string[] = (
     exception.stack ? exception.stack.split('\n') : []
   ).map((item: string) => item.trim())
 
-  const args = {
+  printLogError(context, {
     extras: extras || {},
-    err: { ...exception, stack },
-  }
-
-  printLogError(context, exception, { args, msg: exception.message })
+    exception: { ...exception, stackTrace },
+    message: exception.message,
+  })
 
   return {
     exceptionName: context,
-    msg: exception.message,
-    data: args,
+    message: exception.message,
+    data: {
+      extras: extras || {},
+      exception: { ...exception, stackTrace },
+    },
   }
 }

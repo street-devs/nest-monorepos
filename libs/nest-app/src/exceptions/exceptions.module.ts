@@ -1,4 +1,4 @@
-import { type DynamicModule, type ModuleMetadata, Scope } from '@nestjs/common'
+import { type DynamicModule, type ModuleMetadata } from '@nestjs/common'
 import { GlobalExceptionFilter } from './global.exception-filter'
 import { APP_FILTER } from '@nestjs/core'
 import { type Nullable } from '@lib/common'
@@ -34,7 +34,6 @@ export class ExceptionsModule {
         {
           provide: APP_FILTER,
           useClass: GlobalExceptionFilter,
-          scope: Scope.REQUEST,
         },
         {
           provide: EXCEPTION_CATCHING_OPTIONS,

@@ -9,6 +9,7 @@ import {
   GlobalApplication,
   logException,
   LoggerGlobalService,
+  setGlobalLogger,
 } from '@lib/nest-app'
 import { envOptional, envRequired, loadEnv } from '@lib/common'
 import FastifyCookie from '@fastify/cookie'
@@ -57,6 +58,9 @@ GlobalApplication.bootstrap({
   onAfterStartedApp: async (application, appUri) => {
     // Sets up a global logger
     const globalLogger = application.get(LoggerGlobalService)
+
+    setGlobalLogger(globalLogger)
+
     globalLogger.setContext(envRequired('APP_NAME'))
 
     // Log some information

@@ -1,6 +1,6 @@
 export class BaseException<DataType = any> extends Error {
   public data?: DataType
-  public help?: string | string[] | any
+  public help?: string | string[] | unknown
   public code?: number
   public stackTrace?: string[]
   public shouldShowSuccessStatusCode?: boolean

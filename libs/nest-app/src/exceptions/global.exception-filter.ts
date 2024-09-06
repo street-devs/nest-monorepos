@@ -6,7 +6,6 @@ import {
   ForbiddenException,
   HttpException,
   HttpStatus,
-  Injectable,
   NotFoundException,
   OnModuleInit,
   UnauthorizedException,
@@ -21,15 +20,17 @@ import { logException } from './log-exception'
 import {
   GqlArgumentsHost,
   GqlContextType,
+  GqlExceptionFilter,
   GraphQLExecutionContext,
 } from '@nestjs/graphql'
+import { HttpArgumentsHost } from '@nestjs/common/interfaces'
 
 export interface IExceptionResponse {
   status: string
   statusCode: HttpStatus
   timestamp: Date
   path?: Nullable<string>
-  help?: Nullable<string>
+  help?: Nullable<string | string[] | unknown>
   message: string
   data?: Nullable<unknown>
   shouldShowSuccessStatusCode: boolean
@@ -40,9 +41,12 @@ export interface IUnwantedError extends Error {
   getStatus?: () => number
 }
 
+export type ExceptionToBeCaught = HttpException | BaseException | IUnwantedError
+
 @Catch()
-@Injectable()
-export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
+export class GlobalExceptionFilter
+  implements ExceptionFilter, GqlExceptionFilter, OnModuleInit
+{
   private _options: IExceptionCatchingOptions = {}
 
   public constructor(private readonly _moduleRef: ModuleRef) {}
@@ -53,25 +57,20 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
     })
   }
 
-  public async catch(
-    exception: HttpException | BaseException | IUnwantedError,
-    host: ArgumentsHost
-  ) {
+  public async catch(exception: ExceptionToBeCaught, host: ArgumentsHost) {
     const requestType = host.getType<GqlContextType>()
 
     let request: any
-    let context: any
+    let context: HttpArgumentsHost
 
     switch (requestType) {
       case 'graphql':
         const gqlHost = GqlArgumentsHost.create(host)
-        context = gqlHost.getContext<GraphQLExecutionContext>()
-
+        request = gqlHost.getContext<GraphQLExecutionContext>()
         break
       case 'http':
       default:
         context = host.switchToHttp()
-
         request = context.getRequest()
     }
 
@@ -83,8 +82,7 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
         })
     }
 
-    const { shouldShowSuccessStatusCode, ...exceptionResponse } =
-      await this.transformException(request, exception)
+    const exceptionResponse = await this.transformException(request, exception)
 
     if (this._options.afterTransformException) {
       void this._options
@@ -94,29 +92,11 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
         })
     }
 
-    logException(exception, 'GlobalExceptionFilter.transformException')
-
-    const response = context.getResponse()
-
-    if (response.send) {
-      return await response
-        .status(
-          shouldShowSuccessStatusCode
-            ? HttpStatus.OK
-            : exceptionResponse.statusCode
-        )
-        .send(exceptionResponse)
-    } else if (response.json) {
-      return await response
-        .status(
-          shouldShowSuccessStatusCode
-            ? HttpStatus.OK
-            : exceptionResponse.statusCode
-        )
-        .json(exceptionResponse)
+    if (requestType === 'graphql') {
+      return this.responseGraphQL(request, exceptionResponse)
     }
 
-    return exceptionResponse
+    return this.responseHttp(context!, exception, exceptionResponse)
   }
 
   protected async transformException(
@@ -216,6 +196,55 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
     }
 
     return exceptionResponse
+  }
+
+  protected responseGraphQL(
+    request: any,
+    exceptionResponse: IExceptionResponse
+  ) {
+    const newException = new BaseException({
+      ...exceptionResponse,
+      shouldShowSuccessStatusCode: true,
+      data: request.body,
+    })
+
+    logException(
+      newException,
+      'GlobalExceptionFilter.transformException - responseGraphQL'
+    )
+
+    return newException
+  }
+
+  protected async responseHttp(
+    context: HttpArgumentsHost,
+    exception: ExceptionToBeCaught,
+    exceptionResponse: IExceptionResponse
+  ) {
+    logException(
+      exception,
+      'GlobalExceptionFilter.transformException - responseHttp'
+    )
+
+    const response = context!.getResponse()
+
+    if (response.send) {
+      return await response
+        .status(
+          exceptionResponse.shouldShowSuccessStatusCode
+            ? HttpStatus.OK
+            : exceptionResponse.statusCode
+        )
+        .send(exceptionResponse)
+    } else if (response.json) {
+      return await response
+        .status(
+          exceptionResponse.shouldShowSuccessStatusCode
+            ? HttpStatus.OK
+            : exceptionResponse.statusCode
+        )
+        .json(exceptionResponse)
+    }
   }
 }
 
