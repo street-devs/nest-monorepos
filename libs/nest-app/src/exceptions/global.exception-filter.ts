@@ -18,6 +18,11 @@ import {
   IExceptionCatchingOptions,
 } from './exceptions.module'
 import { logException } from './log-exception'
+import {
+  GqlArgumentsHost,
+  GqlContextType,
+  GraphQLExecutionContext,
+} from '@nestjs/graphql'
 
 export interface IExceptionResponse {
   status: string
@@ -51,10 +56,24 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
   public async catch(
     exception: HttpException | BaseException | IUnwantedError,
     host: ArgumentsHost
-  ): Promise<void> {
-    const context = host.switchToHttp()
+  ) {
+    const requestType = host.getType<GqlContextType>()
 
-    const request = context.getRequest()
+    let request: any
+    let context: any
+
+    switch (requestType) {
+      case 'graphql':
+        const gqlHost = GqlArgumentsHost.create(host)
+        context = gqlHost.getContext<GraphQLExecutionContext>()
+
+        break
+      case 'http':
+      default:
+        context = host.switchToHttp()
+
+        request = context.getRequest()
+    }
 
     if (this._options.beforeTransformException) {
       void this._options
@@ -75,6 +94,8 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
         })
     }
 
+    logException(exception, 'GlobalExceptionFilter.transformException')
+
     const response = context.getResponse()
 
     if (response.send) {
@@ -85,15 +106,17 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
             : exceptionResponse.statusCode
         )
         .send(exceptionResponse)
+    } else if (response.json) {
+      return await response
+        .status(
+          shouldShowSuccessStatusCode
+            ? HttpStatus.OK
+            : exceptionResponse.statusCode
+        )
+        .json(exceptionResponse)
     }
 
-    return await response
-      .status(
-        shouldShowSuccessStatusCode
-          ? HttpStatus.OK
-          : exceptionResponse.statusCode
-      )
-      .json(exceptionResponse)
+    return exceptionResponse
   }
 
   protected async transformException(
@@ -191,8 +214,6 @@ export class GlobalExceptionFilter implements ExceptionFilter, OnModuleInit {
 
       exceptionResponse.shouldShowSuccessStatusCode = false
     }
-
-    logException(exception, 'GlobalExceptionFilter.transformException')
 
     return exceptionResponse
   }
