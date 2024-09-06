@@ -1,7 +1,9 @@
-import { Module, Scope } from '@nestjs/common'
+import { Global, Module, Scope } from '@nestjs/common'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { ApiRenderInterceptor } from './interceptors'
+import { GlobalApplication } from './global-application'
 
+@Global()
 @Module({
   providers: [
     {
@@ -12,6 +14,8 @@ import { ApiRenderInterceptor } from './interceptors'
         }),
       scope: Scope.REQUEST,
     },
+    GlobalApplication,
   ],
+  exports: [GlobalApplication],
 })
 export class BaseNestAppModule {}

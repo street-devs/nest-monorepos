@@ -23,19 +23,20 @@ export class ApiRenderInterceptor implements NestInterceptor {
         }
 
         if (response === undefined || !response) {
-          return {}
+          return {
+            status: 'OK',
+          }
+        }
+
+        if (!this._options.showResponseStatus) {
+          return response
         }
 
         if (isNotObjectResponse(response)) {
-          return response
-        }
-      }),
-      map((response) => {
-        if (
-          isNotObjectResponse(response) ||
-          !this._options.showResponseStatus
-        ) {
-          return response
+          return {
+            data: response,
+            status: 'OK',
+          }
         }
 
         return {

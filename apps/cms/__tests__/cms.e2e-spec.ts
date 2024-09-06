@@ -26,7 +26,11 @@ describe('CmsController (e2e)', () => {
         url: '/',
       })
       .then((response: LightMyRequestResponse) => {
-        expect(response.payload).toEqual('Hello World!')
+        const parsedPayload = JSON.parse(response.payload)
+        expect(parsedPayload).toMatchObject({
+          data: 'Hello World!',
+          status: 'OK',
+        })
       })
   })
 
@@ -37,7 +41,8 @@ describe('CmsController (e2e)', () => {
         url: '/health',
       })
       .then((response: LightMyRequestResponse) => {
-        expect(JSON.parse(response.payload)).toMatchObject({
+        const parsedPayload = JSON.parse(response.payload)
+        expect(parsedPayload).toMatchObject({
           status: 'OK',
         })
       })

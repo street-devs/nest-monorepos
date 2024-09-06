@@ -1,12 +1,16 @@
 import { envNumberOptional, envOptional } from '@lib/common'
-import { type INestApplication } from '@nestjs/common'
+import {
+  Injectable,
+  InternalServerErrorException,
+  type INestApplication,
+} from '@nestjs/common'
 import {
   type CorsOptions,
   type CorsOptionsDelegate,
 } from '@nestjs/common/interfaces/external/cors-options.interface'
 
 interface IApplication
-  extends Pick<INestApplication, 'listen' | 'getUrl' | 'enableCors'> {}
+  extends Pick<INestApplication, 'listen' | 'getUrl' | 'enableCors' | 'get'> {}
 
 export interface IBootstrapAppOptions<T = INestApplication> {
   appDirName: string
@@ -18,6 +22,7 @@ export interface IBootstrapAppOptions<T = INestApplication> {
   }
 }
 
+@Injectable()
 export class GlobalApplication {
   private static _application: INestApplication
 
@@ -33,14 +38,16 @@ export class GlobalApplication {
     onBeforeStartApp,
     onAfterStartedApp,
     options = { cors: true },
-  }: IBootstrapAppOptions<T>): Promise<void> {
+  }: IBootstrapAppOptions<T>) {
     if (GlobalApplication._isAppBoostraped) {
-      return
+      throw new InternalServerErrorException('App already bootstrapped')
     }
 
-    GlobalApplication.setAppDir(appDirName)
-
     const application: T = await initApp()
+
+    const globalAppInstance = application.get(GlobalApplication)
+
+    globalAppInstance.setAppDir(appDirName)
 
     if (onBeforeStartApp) {
       await onBeforeStartApp(application)
@@ -54,50 +61,52 @@ export class GlobalApplication {
       )
     }
 
-    await GlobalApplication.setApp(application).listen(
-      envNumberOptional(3000, 'PORT'),
-      envOptional('0.0.0.0', 'SERVER__ADDRESS'),
-      async () => {
-        const address = await application.getUrl()
+    await globalAppInstance
+      .setApp(application)
+      .listen(
+        envNumberOptional(3000, 'PORT'),
+        envOptional('0.0.0.0', 'SERVER__ADDRESS'),
+        async () => {
+          const address = await application.getUrl()
 
-        GlobalApplication.setAppUrl(address)
+          globalAppInstance.setAppUrl(address)
 
-        if (onAfterStartedApp) {
-          await onAfterStartedApp(application, address)
+          if (onAfterStartedApp) {
+            await onAfterStartedApp(application, address)
+          }
+
+          GlobalApplication._isAppBoostraped = true
         }
-
-        GlobalApplication._isAppBoostraped = true
-      }
-    )
+      )
   }
 
-  public static setApp<T = INestApplication>(app: T): T {
+  public setApp<T = INestApplication>(app: T): T {
     GlobalApplication._application = app as unknown as INestApplication
 
     return GlobalApplication._application as unknown as T
   }
 
-  public static setAppUrl(url: string): string {
+  public setAppUrl(url: string): string {
     GlobalApplication._appUrl = url
 
     return GlobalApplication._appUrl
   }
 
-  public static setAppDir(dir: string): string {
+  public setAppDir(dir: string): string {
     GlobalApplication._appDir = dir
 
     return GlobalApplication._appDir
   }
 
-  public static app<T = INestApplication>(): T {
+  public app<T = INestApplication>(): T {
     return GlobalApplication._application as unknown as T
   }
 
-  public static get appUrl(): string {
+  public get appUrl(): string {
     return GlobalApplication._appUrl
   }
 
-  public static get appDir(): string {
-    return GlobalApplication._appUrl
+  public get appDir(): string {
+    return GlobalApplication._appDir
   }
 }
