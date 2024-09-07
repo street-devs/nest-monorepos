@@ -1,5 +1,9 @@
 import { type AbstractHttpAdapter, NestFactory } from '@nestjs/core'
-import { type INestApplication, VersioningType } from '@nestjs/common'
+import {
+  type INestApplication,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import {
   type NestFastifyApplication,
@@ -13,6 +17,7 @@ import {
 } from '@lib/nest-app'
 import { envOptional, envRequired, loadEnv } from '@lib/common'
 import FastifyCookie from '@fastify/cookie'
+import FastifyMultipart from '@fastify/multipart'
 import { CmsModule } from './cms.module'
 import { Logger } from 'nestjs-pino'
 
@@ -45,11 +50,16 @@ GlobalApplication.bootstrap({
     const adaptorInstance = application.getHttpAdapter().getInstance()
 
     await adaptorInstance.register(FastifyCookie)
+    await adaptorInstance.register(FastifyMultipart)
 
     // Enabling versioning
     application.enableVersioning({
       type: VersioningType.URI,
     })
+
+    application.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true })
+    )
 
     // Register swagger
     registerSwagger(application)

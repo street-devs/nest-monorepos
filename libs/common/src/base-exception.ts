@@ -13,7 +13,7 @@ export class BaseException<DataType = any> extends Error {
     Object.assign(this, {
       code: 400,
       message,
-      shouldShowSuccessStatusCode: false,
+      shouldShowSuccessStatusCode: true,
       ...(partial || {}),
     })
 

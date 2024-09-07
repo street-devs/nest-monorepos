@@ -21,7 +21,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
-    "lib": ["ESNext", "dom"],
+    "lib": ["ESNext", "DOM"],
     "paths": {
       "@lib/nest-app": ["libs/nest-app/src"],
       "@lib/nest-app/*": ["libs/nest-app/src/*"],

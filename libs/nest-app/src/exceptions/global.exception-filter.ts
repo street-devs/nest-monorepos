@@ -190,7 +190,8 @@ export class GlobalExceptionFilter
       exceptionResponse.message =
         catchSpecialException(exception) || exceptionResponse.message
 
-      exceptionResponse.statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+      exceptionResponse.statusCode =
+        exception['statusCode'] ?? HttpStatus.INTERNAL_SERVER_ERROR
 
       exceptionResponse.shouldShowSuccessStatusCode = false
     }
