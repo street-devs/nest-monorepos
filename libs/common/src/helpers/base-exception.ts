@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common'
+
 export class BaseException<DataType = any> extends Error {
   protected readonly _type = 'BaseException'
 
@@ -12,15 +14,13 @@ export class BaseException<DataType = any> extends Error {
     const message = partial?.message || this._type
 
     const initial = {
-      code: 400,
+      code: HttpStatus.BAD_REQUEST,
       message,
       shouldShowSuccessStatusCode: true,
       ...(partial || {}),
     }
 
-    for (const key in initial) {
-      this[key] = initial[key]
-    }
+    Object.assign(this, initial)
   }
 
   public toString(): string {
