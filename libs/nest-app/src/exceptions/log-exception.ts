@@ -1,4 +1,4 @@
-import { type UnknownRecord } from '@lib/common'
+import { type UnknownRecord } from '@lib/common/helpers'
 import { printLogError } from '../helpers'
 
 export interface ILogExceptionResponse {

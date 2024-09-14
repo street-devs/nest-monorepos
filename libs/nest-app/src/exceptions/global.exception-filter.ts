@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
-import { BaseException, Nullable } from '@lib/common'
+import { BaseException, Nullable } from '@lib/common/helpers'
 import {
   EXCEPTION_CATCHING_OPTIONS,
   IExceptionCatchingOptions,
@@ -205,9 +205,10 @@ export class GlobalExceptionFilter
   ) {
     const newException = new BaseException({
       ...exceptionResponse,
-      shouldShowSuccessStatusCode: true,
       data: request.body,
     })
+
+    delete newException.shouldShowSuccessStatusCode
 
     logException(
       newException,
@@ -220,7 +221,7 @@ export class GlobalExceptionFilter
   protected async responseHttp(
     context: HttpArgumentsHost,
     exception: ExceptionToBeCaught,
-    exceptionResponse: IExceptionResponse
+    { shouldShowSuccessStatusCode, ...exceptionResponse }: IExceptionResponse
   ) {
     logException(
       exception,
@@ -232,7 +233,7 @@ export class GlobalExceptionFilter
     if (response.send) {
       return await response
         .status(
-          exceptionResponse.shouldShowSuccessStatusCode
+          shouldShowSuccessStatusCode
             ? HttpStatus.OK
             : exceptionResponse.statusCode
         )
@@ -240,7 +241,7 @@ export class GlobalExceptionFilter
     } else if (response.json) {
       return await response
         .status(
-          exceptionResponse.shouldShowSuccessStatusCode
+          shouldShowSuccessStatusCode
             ? HttpStatus.OK
             : exceptionResponse.statusCode
         )

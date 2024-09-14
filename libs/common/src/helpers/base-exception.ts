@@ -1,24 +1,25 @@
 export class BaseException<DataType = any> extends Error {
+  protected readonly _type = 'BaseException'
+
   public data?: DataType
   public help?: string | string[] | unknown
   public code?: number
-  public stackTrace?: string[]
   public shouldShowSuccessStatusCode?: boolean
 
   public constructor(partial?: Partial<BaseException<DataType>>) {
-    const message = partial?.message || 'BaseException'
+    super()
 
-    super(message)
+    const message = partial?.message || this._type
 
-    Object.assign(this, {
+    const initial = {
       code: 400,
       message,
       shouldShowSuccessStatusCode: true,
       ...(partial || {}),
-    })
+    }
 
-    if (this.stack) {
-      this.stackTrace = this.stack.split('\n').map((item) => item.trim())
+    for (const key in initial) {
+      this[key] = initial[key]
     }
   }
 
@@ -28,7 +29,11 @@ export class BaseException<DataType = any> extends Error {
       data: this.data,
       help: this.help,
       code: this.code,
-      stackTrace: this.stackTrace,
+      stackTrace: this.getStack(),
     })
+  }
+
+  public getStack(): string[] {
+    return this.stack?.split('\n').map((item) => item.trim()) ?? []
   }
 }

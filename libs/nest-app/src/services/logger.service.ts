@@ -8,10 +8,14 @@ export class LoggerService extends PinoLogger {
 
     this.setContext(LoggerService.name)
   }
+
+  public log(obj: unknown, msg?: string, ...args: any[]) {
+    return this.info(obj, msg, ...args)
+  }
 }
 
 @Injectable({ scope: Scope.REQUEST })
-export class LoggerRequestService extends PinoLogger {
+export class LoggerRequestService extends LoggerService {
   public constructor(@Inject(PARAMS_PROVIDER_TOKEN) params: Params) {
     super(params)
 
@@ -20,7 +24,7 @@ export class LoggerRequestService extends PinoLogger {
 }
 
 @Injectable()
-export class LoggerGlobalService extends PinoLogger {
+export class LoggerGlobalService extends LoggerService {
   public constructor(@Inject(PARAMS_PROVIDER_TOKEN) params: Params) {
     super(params)
 

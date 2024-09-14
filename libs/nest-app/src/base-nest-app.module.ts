@@ -15,7 +15,7 @@ import {
   LoggerRequestService,
   LoggerService,
 } from './services/logger.service'
-import { envBooleanOptional } from '@lib/common'
+import { envBooleanOptional } from '@lib/common/helpers'
 
 export interface IMonitoringModuleDefinitions {
   excludedRoutes?: RouteInfo[]
@@ -125,6 +125,7 @@ export class BaseNestAppModule {
         LoggerRequestService,
         LoggerGlobalService,
         LoggerModule,
+        Logger,
       ],
       global: true,
     }
