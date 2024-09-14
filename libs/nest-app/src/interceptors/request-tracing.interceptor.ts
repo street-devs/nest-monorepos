@@ -7,7 +7,7 @@ import {
 import { IncomingMessage } from 'http'
 import { finalize, Observable } from 'rxjs'
 import { LoggerService } from '../services'
-import { nowInS } from '@lib/common/helpers'
+import { nowInS } from '@lib/common'
 import { type GqlContextType, GqlExecutionContext } from '@nestjs/graphql'
 
 declare module 'http' {

@@ -1,7 +1,7 @@
 import { type DynamicModule, type ModuleMetadata } from '@nestjs/common'
 import { GlobalExceptionFilter } from './global.exception-filter'
 import { APP_FILTER } from '@nestjs/core'
-import { type Nullable } from '@lib/common/helpers'
+import { type Nullable } from '@lib/common'
 
 export interface IExceptionCatchingOptions {
   // Use this option to handle some events before the exception is transformed

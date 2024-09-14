@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
-import { BaseException, Nullable } from '@lib/common/helpers'
+import { BaseException, Nullable } from '@lib/common'
 import {
   EXCEPTION_CATCHING_OPTIONS,
   IExceptionCatchingOptions,
