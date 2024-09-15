@@ -1,5 +1,4 @@
 export * from './base-exception'
 export * from './env'
 export * from './datetime'
-export * from './snowflake-id'
 export * from './typings'
