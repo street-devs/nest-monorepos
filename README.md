@@ -11,7 +11,7 @@
 ## Project setup
 
 ```bash
-$ pnpm install
+$ npm install
 ```
 
 ## Create new monorepo application
@@ -64,10 +64,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Author - [Justin Phan](https://github.com/duysolo)
+- Facebook - [Justin Phan](https://www.facebook.com/duypt.dev)
+- Website - [https://duypt.dev](https://duypt.dev)
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Nest Monorepos is [MIT licensed](https://github.com/street-devs/nest-monorepos/blob/main/LICENSE).
