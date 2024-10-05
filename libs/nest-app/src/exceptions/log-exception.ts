@@ -1,5 +1,5 @@
 import { type UnknownRecord } from '@lib/common'
-import { printLogError } from '../helpers'
+import { printLogError } from '../base-nest-app/helpers'
 
 export interface ILogExceptionResponse {
   exceptionName: string

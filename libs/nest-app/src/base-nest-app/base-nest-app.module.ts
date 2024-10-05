@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common'
 import { APP_INTERCEPTOR } from '@nestjs/core'
 import { ApiRenderInterceptor, RequestTracingInterceptor } from './interceptors'
-import { GlobalApplication } from './global-application'
 import { type RouteInfo } from '@nestjs/common/interfaces'
 import { LoggerModule, type Params } from 'nestjs-pino'
 import {
@@ -90,7 +89,6 @@ export class BaseNestAppModule {
         }),
       ],
       providers: [
-        GlobalApplication,
         LoggerService,
         LoggerRequestService,
         LoggerGlobalService,
@@ -120,7 +118,6 @@ export class BaseNestAppModule {
           : []),
       ],
       exports: [
-        GlobalApplication,
         LoggerService,
         LoggerRequestService,
         LoggerGlobalService,

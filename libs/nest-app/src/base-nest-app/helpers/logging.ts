@@ -1,4 +1,4 @@
-import { type LoggerGlobalService } from '../services/logger.service'
+import { type LoggerGlobalService } from '../services'
 
 let globalLogger: LoggerGlobalService = console as any
 

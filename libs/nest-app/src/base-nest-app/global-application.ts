@@ -1,6 +1,5 @@
 import { envNumberOptional, envOptional } from '@lib/common'
 import {
-  Injectable,
   InternalServerErrorException,
   type INestApplication,
 } from '@nestjs/common'
@@ -22,7 +21,6 @@ export interface IBootstrapAppOptions<T = INestApplication> {
   }
 }
 
-@Injectable()
 export class GlobalApplication {
   private static _application: INestApplication
 
@@ -45,9 +43,7 @@ export class GlobalApplication {
 
     const application: T = await initApp()
 
-    const globalAppInstance = application.get(GlobalApplication)
-
-    globalAppInstance.setAppDir(appDirName)
+    GlobalApplication._appDir = appDirName
 
     if (onBeforeStartApp) {
       await onBeforeStartApp(application)
@@ -61,52 +57,34 @@ export class GlobalApplication {
       )
     }
 
-    await globalAppInstance
-      .setApp(application)
-      .listen(
-        envNumberOptional(3000, 'PORT'),
-        envOptional('0.0.0.0', 'SERVER__ADDRESS'),
-        async () => {
-          const address = await application.getUrl()
+    GlobalApplication._application = application as unknown as INestApplication
 
-          globalAppInstance.setAppUrl(address)
+    await GlobalApplication._application.listen(
+      envNumberOptional(3000, 'PORT'),
+      envOptional('0.0.0.0', 'SERVER__ADDRESS'),
+      async () => {
+        const address = await application.getUrl()
 
-          if (onAfterStartedApp) {
-            await onAfterStartedApp(application, address)
-          }
+        GlobalApplication._appUrl = address
 
-          GlobalApplication._isAppBoostraped = true
+        if (onAfterStartedApp) {
+          await onAfterStartedApp(application, address)
         }
-      )
+
+        GlobalApplication._isAppBoostraped = true
+      }
+    )
   }
 
-  public setApp<T = INestApplication>(app: T): T {
-    GlobalApplication._application = app as unknown as INestApplication
-
+  public static app<T = INestApplication>(): T {
     return GlobalApplication._application as unknown as T
   }
 
-  public setAppUrl(url: string): string {
-    GlobalApplication._appUrl = url
-
+  public static appUrl(): string {
     return GlobalApplication._appUrl
   }
 
-  public setAppDir(dir: string): string {
-    GlobalApplication._appDir = dir
-
-    return GlobalApplication._appDir
-  }
-
-  public app<T = INestApplication>(): T {
-    return GlobalApplication._application as unknown as T
-  }
-
-  public get appUrl(): string {
-    return GlobalApplication._appUrl
-  }
-
-  public get appDir(): string {
+  public static appDir(): string {
     return GlobalApplication._appDir
   }
 }
