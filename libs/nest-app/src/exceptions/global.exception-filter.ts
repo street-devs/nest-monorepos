@@ -254,4 +254,6 @@ function catchSpecialException(exception: Error): string | undefined {
   if ((exception.message || '').startsWith('Unsupported Media Type')) {
     return 'UNSUPPORTED_MEDIA_TYPE'
   }
+
+  // Add more special cases here
 }
