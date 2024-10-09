@@ -1,4 +1,7 @@
-export type Nullable<T> = T | null | undefined
+export type Nullable<
+  T,
+  AllowUndefined extends boolean = true,
+> = AllowUndefined extends true ? T | null | undefined : T | null
 
 export type NullablePartial<T> = Nullable<Partial<T>>
 
