@@ -8,6 +8,8 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+This template supports **Fastify Adaptor** by default.
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:
