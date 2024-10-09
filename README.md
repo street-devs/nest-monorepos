@@ -8,6 +8,8 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+This template supports **Fastify Adaptor** by default.
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:
@@ -22,7 +24,11 @@ Check out a few resources that may come in handy when working with NestJS:
 
 ## Dependencies
 - [nestjs-form-data](https://www.npmjs.com/package/nestjs-form-data): a NestJS middleware for handling `multipart/form-data`, which is primarily used for uploading files.
+
 - [nestjs-pino](https://www.npmjs.com/package/nestjs-pino): Platform agnostic logger for NestJS based on Pino with REQUEST CONTEXT IN EVERY LOG.
+```
+{"req":{"id":"req-1","method":"POST","url":"/users/-/blog/post","query":{},"headers":{"host":"localhost:3000","content-type":"application/json","user-agent":"insomnia/8.4.5","accept":"*/*","content-length":"151"},"remoteAddress":"127.0.0.1","remotePort":61318},"context":"Mercury CMS","data":{"extras":{},"exception":{"_type":"BaseException","data":{"slug":"first-post"},"code":400,"shouldShowSuccessStatusCode":true,"message":"PostSlugExistsException","stackTrace":["Error: PostSlugExistsException","at PostRepositorySql._checkSlugExistsBeforeCreateUpdate (/Users/duysolo/DATA/Works/Repos/Mine/nodejs/estations/dist/apps/cms/main.js:2580:19)","at async PostRepositorySql.create (/Users/duysolo/DATA/Works/Repos/Mine/nodejs/estations/dist/apps/cms/main.js:2458:9)","at async CreatePostHandler.execute (/Users/duysolo/DATA/Works/Repos/Mine/nodejs/estations/dist/apps/cms/main.js:1466:21)"]},"message":"PostSlugExistsException"}}
+```
 
 ## Project setup
 
