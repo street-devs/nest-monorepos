@@ -15,6 +15,15 @@ Check out a few resources that may come in handy when working with NestJS:
 - Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
 - Visit the [NestJS - Workspaces - Monorepo mode](https://docs.nestjs.com/cli/monorepo#monorepo-mode) to learn more about the supported monorepo mode by NestJS.
 
+## Relevant modules
+- [ExceptionsModule](https://github.com/street-devs/nest-monorepos/wiki/ExceptionsModule): offers global exception handling for HTTP and GraphQL contexts in a NestJS application. It allows for customization to execute additional operations before and after exception transformations. Here’s a quick guide on how to use and tailor the module to your needs.
+- [GlobalApplication](https://github.com/street-devs/nest-monorepos/wiki/GlobalApplication): a utility that simplifies the bootstrapping of a NestJS application. It offers a structured approach to initializing and managing the application’s lifecycle, including handling CORS options and executing pre/post startup hooks. This class ensures the app is bootstrapped only once and provides easy access to the app instance, URL, and directory details throughout its lifecycle.
+- [BaseNestAppModule](https://github.com/street-devs/nest-monorepos/wiki/BaseNestAppModule): a flexible, modular utility that integrates advanced logging, request tracing, and API response transformations into your NestJS application. It utilizes `nestjs-pino` for powerful logging and includes interceptors and services to improve observability, structured logging, and monitoring.
+
+## Dependencies
+- [nestjs-form-data](https://www.npmjs.com/package/nestjs-form-data): a NestJS middleware for handling `multipart/form-data`, which is primarily used for uploading files.
+- [nestjs-pino](https://www.npmjs.com/package/nestjs-pino): Platform agnostic logger for NestJS based on Pino with REQUEST CONTEXT IN EVERY LOG.
+
 ## Project setup
 
 ```bash
@@ -25,29 +34,37 @@ $ npm install
 
 ```bash
 # development
-$ pnpm run start cms
+$ npm run start cms
 
 # watch mode
-$ pnpm run start:dev cms
+$ npm run start:dev cms
 
 # production mode
-$ pnpm run start:prod cms
+$ npm run start:prod cms
 ```
 
 ## Run tests
 
 ```bash
 # unit tests
-$ pnpm run test
+$ npm run test
 
 # e2e tests
-$ pnpm run test:e2e
+$ npm run test:e2e
 
 # test coverage
-$ pnpm run test:cov
+$ npm run test:cov
 ```
 
+## Generate new modules
 
+```bash
+# Generate new application
+$ nest generate app your-app-name
+
+# Generate new library
+$ nest generate library your-library-name
+```
 
 ## Support
 
